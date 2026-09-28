@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Advanced Professional Invoice Generator"
+    />
+    <title>Pro Invoice Generator</title>
+    <link rel="icon" href="imgs/Profile.jpeg" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- ============================== -->
+    <!-- Header: Logo + Main Controls   -->
+    <!-- ============================== -->
+    <header>
+      <h1>Invoice Generator</h1>
+      <img id="logoImg" src="imgs/Profile.jpeg" alt="Logo" />
+      <div id="divBtns">
+        <button id="newInvoiceBtn">New Invoice</button>
+        <button id="langToggleBtn">AR / EN</button>
+        <button id="darkModeBtn" title="Toggle Dark Mode">🌙</button>
+        <div class="color-picker-wrapper" title="Theme Color">
+          <input type="color" id="themeColorPicker" value="#2563eb" />
+        </div>
+      </div>
+    </header>
+
+    <!-- كل اللي جوه الـ div ده هو اللي بيتصدّر PDF / صورة / معاينة -->
+    <div id="printableInvoice">
+      <!-- ============================== -->
+      <!-- Invoice Meta: Number + Date    -->
+      <!-- ============================== -->
+      <section id="invoiceMetaSection">
+        <p>
+          Invoice #: <span id="invoiceNumber">#0001</span>
+          <button id="resetInvoiceNumberBtn" title="Reset Number">↺</button>
+        </p>
+        <p>Date: <span id="invoiceDate"></span></p>
+      </section>
+
+      <!-- ============================== -->
+      <!-- Company Details                -->
+      <!-- ============================== -->
+      <section id="companySection">
+        <h2>Company Details</h2>
+        <form id="companyForm">
+          <input type="text" id="companyName" placeholder="Company Name" />
+          <input type="email" id="companyEmail" placeholder="Email" />
+          <input type="text" id="companyPhone" placeholder="Phone Number" />
+          <div class="logo-upload-group">
+            <label for="companyLogoInput" id="logoLabelText"
+              >Upload Logo:</label
+            >
+            <input type="file" id="companyLogoInput" accept="image/*" />
+          </div>
+        </form>
+        <button id="saveCmpInfo">Save Company Info</button>
+      </section>
+
+      <!-- ============================== -->
+      <!-- Client Details                 -->
+      <!-- ============================== -->
+      <section id="clientSection">
+        <h2>Client Details</h2>
+        <div id="clientInputs">
+          <input
+            type="text"
+            id="clientName"
+            placeholder="Client Name"
+            list="clientsList"
+          />
+          <datalist id="clientsList"></datalist>
+          <input type="email" id="clientEmail" placeholder="Client Email" />
+          <input type="text" id="clientPhone" placeholder="Client Phone" />
+        </div>
+      </section>
+
+      <!-- ============================== -->
+      <!-- Invoice Items Table            -->
+      <!-- ============================== -->
+      <section id="itemsSection">
+        <h2>Invoice Items</h2>
+        <div class="table-scroll">
+          <table id="itemsTable">
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Total</th>
+                <th><!-- Delete column --></th>
+              </tr>
+            </thead>
+            <tbody id="itemsBody">
+              <tr id="emptyRow">
+                <td colspan="5" class="empty-state">
+                  No items added yet. Click "+ Add Item" to start.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button id="addItemBtn">+ Add Item</button>
+      </section>
+
+      <!-- ============================== -->
+      <!-- Totals + Deposit Summary       -->
+      <!-- ============================== -->
+      <section id="summarySection">
+        <div class="currency-selector-row">
+          <label id="currencyLabel" for="currencySelect">Currency:</label>
+          <select id="currencySelect">
+            <option value="$">USD ($)</option>
+            <option value="EGP">EGP (ج.م)</option>
+            <option value="SAR">SAR (ر.س)</option>
+            <option value="€">EUR (€)</option>
+          </select>
+        </div>
+        <p>Subtotal: <span id="subtotal">0</span></p>
+        <p>Discount: <input type="number" id="discount" value="0" min="0" /></p>
+        <p>
+          Tax %: <input type="number" id="tax" value="0" min="0" max="100" />
+        </p>
+        <p class="grand-total-row">
+          Grand Total: <span id="grandTotal">0</span>
+        </p>
+        <p>
+          Deposit Paid: <input type="number" id="deposit" value="0" min="0" />
+        </p>
+        <p class="remaining-row">
+          Remaining Due: <span id="remainingDue">0</span>
+        </p>
+      </section>
+    </div>
+    <!-- نهاية الجزء القابل للتصدير -->
+
+    <!-- ============================== -->
+    <!-- Actions: Preview / Save / Export -->
+    <!-- ============================== -->
+    <section id="actionsSection">
+      <button id="previewInvoiceBtn">Preview Invoice</button>
+      <button id="printInvoiceBtn">Print</button>
+      <button id="saveInvoiceBtn">Save Invoice</button>
+      <button id="downloadPdfBtn">Download PDF</button>
+      <button id="downloadImgBtn">Download Image</button>
+      <button id="whatsappShareBtn">Share via WhatsApp</button>
+    </section>
+
+    <!-- ============================== -->
+    <!-- Saved Invoices History         -->
+    <!-- ============================== -->
+    <section id="historySection">
+      <h2>Invoice History</h2>
+      <div id="historyControls">
+        <input
+          type="text"
+          id="historySearch"
+          placeholder="Search by client, date or number..."
+        />
+        <button id="exportBackupBtn">Export Backup</button>
+        <button id="importBackupBtn">Import Backup</button>
+        <input
+          type="file"
+          id="importFileInput"
+          accept="application/json"
+          hidden
+        />
+      </div>
+      <div id="historyList">
+        <p class="empty-state">No invoices saved yet.</p>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- Footer: Contact Links          -->
+    <!-- ============================== -->
+    <footer class="site-footer">
+      <h3 id="footerHeading">Let's Connect</h3>
+      <div class="footer-links">
+        <a
+          href="https://ahmedhassanhamed.github.io/AhmedHassanHamed/"
+          class="footer-item"
+          target="_blank"
+          ><img src="imgs/Ahmed.jpeg" alt="Profile" /> <span>Portfolio</span></a
+        >
+        <a href="https://wa.me/201147729020" class="footer-item" target="_blank"
+          ><img src="imgs/WhatsApp.jpeg" alt="WhatsApp" />
+          <span>WhatsApp</span></a
+        >
+        <a
+          href="mailto:ahmed.hassan.dev77@gmail.com"
+          class="footer-item"
+          target="_blank"
+          ><img src="imgs/Email.jpeg" alt="Email" /> <span>Email</span></a
+        >
+        <a
+          href="https://github.com/AhmedHassanHamed"
+          class="footer-item"
+          target="_blank"
+          ><img src="imgs/GitHub.jpeg" alt="GitHub" /> <span>GitHub</span></a
+        >
+        <a
+          href="https://khamsat.com/user/hassanhamed_cz"
+          class="footer-item"
+          target="_blank"
+          ><img src="imgs/Khamsat.jpeg" alt="Khamsat" /> <span>Khamsat</span></a
+        >
+        <a
+          href="https://mostaql.com/onboarding/portfolio"
+          class="footer-item"
+          target="_blank"
+          ><img src="imgs/Mostaql.jpeg" alt="Mostaql" /> <span>Mostaql</span></a
+        >
+      </div>
+      <p class="copyright">
+        &copy; <span id="currentYear">2026</span> Ahmed Hassan.
+        <span>All rights reserved.</span>
+      </p>
+    </footer>
+
+    <!-- ============================== -->
+    <!-- Preview Modal                  -->
+    <!-- ============================== -->
+    <div id="previewModal" class="modal-overlay">
+      <div class="modal-content">
+        <button id="closePreviewBtn" class="modal-close" title="Close">
+          &times;
+        </button>
+        <div id="previewContent"></div>
+      </div>
+    </div>
+
+    <!-- المكتبات والسكريبتات -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="lang.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
